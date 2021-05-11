@@ -1,0 +1,1 @@
+kenkooo さんの Rust 本 (https://www.shuwasystem.co.jp/book/9784798061702.html) を自分で試したやつ
