@@ -49,7 +49,7 @@ async fn add_todo(
   let conn = db.get()?;
   conn.execute("INSERT INTO todo (text) VALUES (?)", &[&params.text])?;
   Ok(HttpResponse::SeeOther()
-      .header(header::LOCATION, "/")
+      .append_header((header::LOCATION, "/"))
       .finish())
 }
 
@@ -59,9 +59,9 @@ async fn delete_todo(
   db: web::Data<r2d2::Pool<SqliteConnectionManager>>,
 ) -> Result<HttpResponse, MyError> {
   let conn = db.get()?;
-  conn.execute("DELETE FROM todo WHERE id=?", &[param.id])?;
+  conn.execute("DELETE FROM todo WHERE id=?", &[&params.id])?;
   Ok(HttpResponse::SeeOther()
-    .header(header::LOCATION, "/")
+    .append_header((header::LOCATION, "/"))
     .finish())
 }
 
@@ -104,7 +104,13 @@ async fn main() -> Result<(), actix_web::Error> {
   )
   .expect("Failed to create a table `todo`.");
 
-  HttpServer::new(move || App::new().service(index).data(pool.clone()))
+  HttpServer::new(move || {
+    App::new()
+        .service(index)
+        .service(add_todo)
+        .service(delete_todo)
+        .data(pool.clone())
+  })
     .bind("0.0.0.0:8080")?
     .run()
     .await?;
