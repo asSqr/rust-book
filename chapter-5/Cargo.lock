@@ -421,6 +421,7 @@ dependencies = [
  "actix-web",
  "askama",
  "rusqlite",
+ "serde",
  "thiserror",
 ]
 
